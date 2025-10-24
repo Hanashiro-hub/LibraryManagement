@@ -2,6 +2,7 @@
 //会員情報更新
 //ログアウトページ
 session_start();
+header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0");
 
 include_once("./database/connect.php");
 
@@ -19,6 +20,14 @@ $escaped["email"] = htmlspecialchars($stmt["email"],ENT_QUOTES,"UTF-8");
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <script>
+        /*ブラウザバックを検知しリロード*/
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted){
+                window.location.reload();
+            }
+        });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>マイページ</title>
@@ -38,6 +47,8 @@ $escaped["email"] = htmlspecialchars($stmt["email"],ENT_QUOTES,"UTF-8");
         ?>
     </h2>
     <a href="info_edit.php">会員情報変更</a>
+    <br>
+    <a href="book_page.php">書籍ページ</a>
     <br>
     <a href="logout.php">ログアウト</a>
 </body>

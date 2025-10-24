@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- ホスト: 127.0.0.1
--- 生成日時: 2025-10-16 04:46:11
+-- 生成日時: 2025-10-24 04:07:46
 -- サーバのバージョン： 10.4.32-MariaDB
 -- PHP のバージョン: 8.2.12
 
@@ -27,6 +27,7 @@ SET time_zone = "+00:00";
 -- テーブルの構造 `users`
 --
 
+DROP TABLE IF EXISTS `users`;
 CREATE TABLE `users` (
   `id` int(11) NOT NULL,
   `user_name` varchar(30) NOT NULL,
@@ -41,8 +42,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `user_name`, `password`, `email`, `created`, `updated`) VALUES
-(37, '<img/src=. onerror=alert(123)>', '$2y$10$/kWQYX5PFxs3QWnPTadScuagz.DidkaAFivWQ.mCyOYQ/pdLLk1cm', '1016@example.com', '2025-10-16 10:11:03', '2025-10-16 10:12:08'),
-(38, 'テスト01 ', '$2y$10$x5q8NfOVQqL/x2V8YI7HmuCgEoyZ1KNDsuEG/tQie7A99EJ6.e5N.', 'test01@example.com', '2025-10-16 11:28:17', '0000-00-00 00:00:00');
+(42, 'ユーザ01', '$2y$10$y0uFaNZ2xDzUkXn9d5pineEdlfyEqPcPP6j/ngHDSXAqOXrvNr4EK', '0001@example.com', '2025-10-24 10:38:13', '2025-10-24 10:38:31'),
+(43, 'ユーザ02', '$2y$10$KAzs.YSzISe3l02Srhp6D.pIaK/dR99n7PYo.7aMl108DKzKH1vwK', '0002@example.com', '2025-10-24 10:44:29', '0000-00-00 00:00:00');
 
 --
 -- ダンプしたテーブルのインデックス
@@ -63,7 +64,7 @@ ALTER TABLE `users`
 -- テーブルの AUTO_INCREMENT `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=39;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=44;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

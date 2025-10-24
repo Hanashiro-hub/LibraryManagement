@@ -90,6 +90,14 @@ if(!isset($_SESSION["id"])){
 <!DOCTYPE html>
 <html lang="ja">
 <head>
+    <script>
+        /*ブラウザバックを検知しリロード*/
+        window.addEventListener('pageshow', function(event) {
+            if (event.persisted){
+                window.location.reload();
+            }
+        });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>会員情報変更</title>
