@@ -1,11 +1,8 @@
 <?php
 session_start();
+include_once("./lib/common_function.php");
 
-//idが空なら未ログイン状態のためindexへリダイレクト
-if (empty($_SESSION["id"])){
-    header("Location:/LibraryManagement/index.php");
-    exit;
-}
+isLogin();
 
 include_once("./database/connect.php");
 date_default_timezone_set('Asia/Tokyo');
@@ -27,25 +24,14 @@ $escaped["email"] = htmlspecialchars($stmt["email"],ENT_QUOTES,"UTF-8");
 
 
 if (isset($_POST["submitbutton"])){
-
-    //リクエストにトークンが付与されていない場合
-    if(!isset($_POST["csrf_token"])){
-        echo "不正なリクエスト";
-        exit;
-    }
-
     //csrfトークン判定
-    if (!hash_equals($_SESSION["csrf_token"], $_POST["csrf_token"])){
-        //トークンが一致しない場合
-        echo "不正なリクエスト";
-        exit;
-    }
+    CheckCsrfToken();
 
     $updated_date = date("Y-m-d H:i:s");
 
-    //パス更新の有無を判定
+    //パスワード更新の有無を判定
     if(empty($_POST["pass"])){
-        //パス変更なし
+        //パスワード変更なし
         $sql = "UPDATE `users` SET `user_name` = :username, `email` = :email, `updated` = :updated WHERE `users`.`id` = :id;";
         $statement = $pdo->prepare($sql);
 
@@ -57,7 +43,7 @@ if (isset($_POST["submitbutton"])){
         $statement->bindParam(":id", $_SESSION["id"], PDO::PARAM_INT);
         session_regenerate_id(true);
     }else{
-        //パス変更あり
+        //パスワード変更あり
         $sql = "UPDATE `users` SET `user_name` = :username, `password` = :pass, `email` = :email, `updated` = :updated WHERE `users`.`id` = :id;";
         $statement = $pdo->prepare($sql);
 
@@ -81,10 +67,7 @@ if (isset($_POST["submitbutton"])){
 }
 
 //セッション切れならindexへリダイレクト
-if(!isset($_SESSION["id"])){
-        header("Location:/LibraryManagement/index.php");
-        exit;
-    }
+isLogin();
 ?>
 
 <!DOCTYPE html>

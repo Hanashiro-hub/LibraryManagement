@@ -5,7 +5,9 @@ session_start();
 header("Cache-Control: no-cache, no-store, must-revalidate, max-age=0");
 
 include_once("./database/connect.php");
+include_once("./lib/common_function.php");
 
+isLogin();
 $sql = "SELECT user_name, email FROM users WHERE `id` = :id";
 
 $statement = $pdo->prepare($sql);
@@ -36,14 +38,9 @@ $escaped["email"] = htmlspecialchars($stmt["email"],ENT_QUOTES,"UTF-8");
     <h1>マイページ</h1>
     <h2>
         <?php
-            if(isset($_SESSION["id"])){
-                echo "ID:" . $_SESSION["id"]."<br>";
-                echo "NAME:" . $escaped["name"]."<br>";
-                echo "EMAIL:" . $escaped["email"]; 
-            } else{
-                header("Location:/LibraryManagement/index.php");
-                exit;
-            }
+            echo "ID:" . $_SESSION["id"]."<br>";
+            echo "NAME:" . $escaped["name"]."<br>";
+            echo "EMAIL:" . $escaped["email"]; 
         ?>
     </h2>
     <a href="info_edit.php">会員情報変更</a>

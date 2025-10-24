@@ -3,25 +3,14 @@
 //ログイン後マイページへ遷移
 session_start();
 include_once("./database/connect.php");
+include_once("./lib/common_function.php");
 
-if (!isset($_SESSION["csrf_token"])){
-    $_SESSION["csrf_token"] = bin2hex(random_bytes(16));
-}
+////セッションがCSRFトークンを保持していなければ生成する
+GenerateCsrfToken();
 
 if (isset($_POST["submitbutton"])){
-
-    //csrfトークン判定
-    if(isset($_POST["csrf_token"])){
-        if (!hash_equals($_SESSION["csrf_token"], $_POST["csrf_token"])){
-            //トークンが一致しない場合
-            echo "不正なリクエスト";
-            exit;
-        }
-    }else{
-        //リクエストにトークが付与されていない場合
-        echo "不正なリクエスト";
-        exit;
-    }
+    //CSRFトークンチェック
+    CheckCsrfToken();
 
     $sql = "SELECT id, password FROM users WHERE `email` = :email";
 

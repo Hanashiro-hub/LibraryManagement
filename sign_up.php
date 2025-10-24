@@ -2,27 +2,16 @@
 //userテーブルに情報を登録
 //登録後ログインページ(index.php)へリダイレクト
 include_once("./database/connect.php");
+include_once("./lib/common_function.php");
+
 date_default_timezone_set('Asia/Tokyo');
 session_start();
 
-if (!isset($_SESSION["csrf_token"])){
-    $_SESSION["csrf_token"] = bin2hex(random_bytes(16));
-}
+GenerateCsrfToken();
 
 if (isset($_POST["submitbutton"])){
-
-    //リクエストにトークンが付与されていない場合
-    if(!isset($_POST["csrf_token"])){
-        echo "不正なリクエスト";
-        exit;
-    }
-
     //csrfトークン判定
-    if (!hash_equals($_SESSION["csrf_token"], $_POST["csrf_token"])){
-        //トークンが一致しない場合
-        echo "不正なリクエスト";
-        exit;
-    }
+    CheckCsrfToken();
 
     $created_date = date("Y-m-d H:i:s");
     $sql = "INSERT INTO `users` (`user_name`, `password`, `email`, `created`) VALUES (:username, :pass, :email, :created);";

@@ -1,16 +1,12 @@
 <?php
 include_once("./database/connect.php");
+include_once("./lib/common_function.php");
 date_default_timezone_set('Asia/Tokyo');
 session_start();
+isLogin();
 
 if (!isset($_SESSION["csrf_token"])){
     $_SESSION["csrf_token"] = bin2hex(random_bytes(16));
-}
-
-//idが空なら未ログイン状態のためindexへリダイレクト
-if (empty($_SESSION["id"])){
-    header("Location:/LibraryManagement/index.php");
-    exit;
 }
 
 $sql = "SELECT title, author, star FROM books WHERE id = :id AND title = :title AND author = :author;";
@@ -46,19 +42,8 @@ if ($stmt !== false){
 
 //更新ボタン押下時の処理
 if (isset($_POST["submitbutton"])){
-
-    //リクエストにトークンが付与されていない場合
-    if(!isset($_POST["csrf_token"])){
-        echo "不正なリクエスト";
-        exit;
-    }
-
     //csrfトークン判定
-    if (!hash_equals($_SESSION["csrf_token"], $_POST["csrf_token"])){
-        //トークンが一致しない場合
-        echo "不正なリクエスト";
-        exit;
-    }
+    CheckCsrfToken();
 
     $updated_date = date("Y-m-d H:i:s");
 

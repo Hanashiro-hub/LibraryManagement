@@ -2,14 +2,11 @@
 //booksテーブルからtitle, author, star, created, updatedを取得
 //検索結果は縦に一覧表示
 //検索はタイトルのみ対応
-include_once("./database/connect.php");
 session_start();
+include_once("./database/connect.php");
+include_once("./lib/common_function.php");
 
-//idが空なら未ログイン状態のためindexへリダイレクト
-if (empty($_SESSION["id"])){
-    header("Location:/LibraryManagement/index.php");
-    exit;
-}
+isLogin();
 
 $_SESSION["search"] = "";
 
