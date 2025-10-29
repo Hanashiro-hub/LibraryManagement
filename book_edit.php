@@ -5,9 +5,7 @@ date_default_timezone_set('Asia/Tokyo');
 session_start();
 isLogin();
 
-if (!isset($_SESSION["csrf_token"])){
-    $_SESSION["csrf_token"] = bin2hex(random_bytes(16));
-}
+GenerateCsrfToken("book_edit");
 
 $sql = "SELECT title, author, star FROM books WHERE id = :id AND title = :title AND author = :author;";
 $statement = $pdo->prepare($sql);
@@ -42,8 +40,8 @@ if ($stmt !== false){
 
 //更新ボタン押下時の処理
 if (isset($_POST["submitbutton"])){
-    //csrfトークン判定
-    CheckCsrfToken();
+    //csrfトークン照合とリセット
+    TokenCkeckAndReset("book_edit", "book_edit.php");
 
     $updated_date = date("Y-m-d H:i:s");
 
@@ -60,15 +58,13 @@ if (isset($_POST["submitbutton"])){
     
     try{
         $statement->execute();
-        $_SESSION["new_title"] = $_POST["title"];
-        $_SESSION["new_author"] = $_POST["author"];
-        header("Location: " . $_SERVER['PHP_SELF'], true, 303);
+        header("Location:/LibraryManagement/book_page.php");
         exit;
     }catch(PDOException){
         echo "更新失敗";
+        GenerateCsrfToken("book_edit");//トークン再発行
     }
 }
-
 
 ?>
 
@@ -105,7 +101,7 @@ if (isset($_POST["submitbutton"])){
         <br>
 
         <input type="submit" value="更新" name="submitbutton">
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]; ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]["book_edit"]; ?>">
     </form>
 </body>
 </html>

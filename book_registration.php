@@ -7,14 +7,15 @@ date_default_timezone_set('Asia/Tokyo');
 session_start();
 isLogin();
 
-if (!isset($_SESSION["csrf_token"])){
-    $_SESSION["csrf_token"] = bin2hex(random_bytes(16));
-}
+GenerateCsrfToken("book_registration");
+
+//エラーメッセージ表示(CSRFで弾かれた場合)
+err_message();
 
 //備忘:以下if内は登録ボタンが押下された時の処理
 if (isset($_POST["submitbutton"])){
-    //csrfトークン判定
-    CheckCsrfToken();
+    //csrfトークン照合とリセット
+    TokenCkeckAndReset("book_registration", "book_registration.php");
 
     $created_date = date("Y-m-d H:i:s");
     $sql = "INSERT INTO `books` (`id`, `title`, `author`, `star`, `created`, `updated`) VALUES (:id, :title, :author, :star, :created, :updated);";
@@ -36,6 +37,7 @@ if (isset($_POST["submitbutton"])){
     catch(Exception)
     {
         echo "登録に失敗しました。";
+        GenerateCsrfToken("book_registration");//トークン再発行
     }
 
 }
@@ -72,7 +74,7 @@ if (isset($_POST["submitbutton"])){
         <br>
 
         <input type="submit" value="登録" style="margin: 3px" name="submitbutton">
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]; ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]["book_registration"]; ?>">
     </form>  
     <a href="book_page.php">書籍ページへ戻る</a>
 </body>

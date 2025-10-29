@@ -6,12 +6,14 @@ include_once("./lib/common_function.php");
 
 date_default_timezone_set('Asia/Tokyo');
 session_start();
+GenerateCsrfToken("sign_up");
 
-GenerateCsrfToken();
+//エラーメッセージ表示(CSRFで弾かれた場合)
+err_message();
 
 if (isset($_POST["submitbutton"])){
-    //csrfトークン判定
-    CheckCsrfToken();
+    //CSRFトークン照合とリセット
+    TokenCkeckAndReset("sign_up", "sign_up.php");
 
     $created_date = date("Y-m-d H:i:s");
     $sql = "INSERT INTO `users` (`user_name`, `password`, `email`, `created`) VALUES (:username, :pass, :email, :created);";
@@ -30,6 +32,7 @@ if (isset($_POST["submitbutton"])){
         exit;
     }
     catch(Exception){
+        GenerateCsrfToken("sign_up");//トークン再発行
         echo "登録に失敗しました。";
     }
 }
@@ -61,7 +64,7 @@ if (isset($_POST["submitbutton"])){
             <br>
 
             <input type="submit" value="登録" name="submitbutton">
-            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]; ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]["sign_up"]; ?>">
         </div>
     </form>
 

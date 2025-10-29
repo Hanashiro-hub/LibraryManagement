@@ -5,12 +5,16 @@ session_start();
 include_once("./database/connect.php");
 include_once("./lib/common_function.php");
 
-////セッションがCSRFトークンを保持していなければ生成する
-GenerateCsrfToken();
+//トークン発行
+GenerateCsrfToken("index");
 
+//エラーメッセージ表示(CSRFで弾かれた場合)
+err_message();
+
+//ログインボタン押下時の処理
 if (isset($_POST["submitbutton"])){
-    //CSRFトークンチェック
-    CheckCsrfToken();
+    //CSRFトークンの照合とリセット
+    TokenCkeckAndReset("index", "index.php");
 
     $sql = "SELECT id, password FROM users WHERE `email` = :email";
 
@@ -28,11 +32,12 @@ if (isset($_POST["submitbutton"])){
             exit;
         }else{
             echo "メールアドレス又はパスワードが間違っています。";
+            GenerateCsrfToken("index"); //トークン再発行
         }
     }else{
         echo "メールアドレス又はパスワードが間違っています。";
+        GenerateCsrfToken("index"); //トークン再発行
     }
-    
 }
 ?>
 
@@ -56,11 +61,11 @@ if (isset($_POST["submitbutton"])){
             <br>
             <input type="submit" value="ログイン" name="submitbutton">
             <br>
-            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]; ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]["index"]; ?>">
         </div>
     </form>
     
-    <a href="sign_up.php">会員登録</a>
-    
+    <a href="sign_up.php" name="sign_up">会員登録</a>
+
 </body>
 </html>

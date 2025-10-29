@@ -6,9 +6,8 @@ date_default_timezone_set('Asia/Tokyo');
 session_start();
 isLogin();
 
-if (!isset($_SESSION["csrf_token"])){
-    $_SESSION["csrf_token"] = bin2hex(random_bytes(16));
-}
+//csrfトークン照合とリセット
+GenerateCsrfToken("book_delete");
 
 $sql = "SELECT title, author FROM books WHERE id = :id AND title = :title AND author = :author;";
 $statement = $pdo->prepare($sql);
@@ -26,8 +25,8 @@ try{
 
 //削除ボタン押下時の処理
 if (isset($_POST["deletebutton"])){
-    //csrfトークン判定
-    CheckCsrfToken();
+    //csrfトークン照合とリセット
+    TokenCkeckAndReset("book_delete", "book_delete.php");
 
     $sql = "DELETE FROM `books` WHERE `books`.`id` = :id AND `books`.`title` = :title AND `books`.`author` = :author;";
     $statement = $pdo->prepare($sql);
@@ -40,6 +39,7 @@ if (isset($_POST["deletebutton"])){
         header("Location:/LibraryManagement/book_page.php");
     }catch(PDOException){
         echo "削除失敗";
+        GenerateCsrfToken("book_delete");//トークン再発行
     }
 }
 
@@ -83,7 +83,7 @@ if (isset($_POST["deletebutton"])){
     <br>
     <form method="POST">
         <input type="submit" value="削除する" name="deletebutton">
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]; ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]["book_delete"]; ?>">
     </form>
     <a href="book_page.php">書籍ページへ戻る</a>
 </body>

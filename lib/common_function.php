@@ -7,24 +7,45 @@ function isLogin(){
     }
 }
 
-//セッションがCSRFトークンを保持していなければ生成する
-function GenerateCsrfToken(){
-    if (!isset($_SESSION["csrf_token"])){
-        $_SESSION["csrf_token"] = bin2hex(random_bytes(16));
+//CSRFトークンを生成
+function GenerateCsrfToken($form){
+    //トークンが無ければ生成
+    if (!isset($_SESSION["csrf_token"][$form])){
+        $_SESSION["csrf_token"][$form] = bin2hex(random_bytes(16));
     }
 }
 
 //csrfトークン判定
-function CheckCsrfToken(){
-    if(isset($_POST["csrf_token"])){
-        if (!hash_equals($_SESSION["csrf_token"], $_POST["csrf_token"])){
-            //トークンが一致しない場合
-            echo "不正なリクエスト";
-            exit;
-        }
-    }else{
-        //リクエストにトークが付与されていない場合
-        echo "不正なリクエスト";
+function CheckCsrfToken($form,$url){
+    if (!isset($_POST["csrf_token"])){
+        ResetCsrfToken($form);
+        $_SESSION["err"] = "もう一度やり直してください。";
+        header("Location:$url");
         exit;
+    }
+
+    if (!hash_equals($_SESSION["csrf_token"][$form], $_POST["csrf_token"])){
+        ResetCsrfToken($form);
+        $_SESSION["err"] = "もう一度やり直してください。";
+        header("Location:$url",true,303);
+        exit;
+    }
+}
+
+//トークンリセット
+function ResetCsrfToken($form){
+    unset($_SESSION["csrf_token"][$form]);
+}
+
+//csrfトークン照合とリセット
+function TokenCkeckAndReset($form,$url){
+    CheckCsrfToken($form,$url);
+    ResetCsrfToken($form);
+}
+
+function err_message(){
+    if (isset($_SESSION["err"])){
+        echo $_SESSION["err"];
+        unset($_SESSION["err"]);
     }
 }

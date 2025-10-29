@@ -1,15 +1,13 @@
 <?php
 session_start();
 include_once("./lib/common_function.php");
-
-isLogin();
-
 include_once("./database/connect.php");
+isLogin();
 date_default_timezone_set('Asia/Tokyo');
+GenerateCsrfToken("info_edit");
 
-if (!isset($_SESSION["csrf_token"])){
-    $_SESSION["csrf_token"] = bin2hex(random_bytes(16));
-}
+//エラーメッセージ表示(CSRFで弾かれた場合)
+err_message();
 
 $sql = "SELECT user_name, email FROM users WHERE id = :id";
 $statement = $pdo->prepare($sql);
@@ -24,8 +22,8 @@ $escaped["email"] = htmlspecialchars($stmt["email"],ENT_QUOTES,"UTF-8");
 
 
 if (isset($_POST["submitbutton"])){
-    //csrfトークン判定
-    CheckCsrfToken();
+    //csrfトークン照合とリセット
+    TokenCkeckAndReset("info_edit", "info_edit.php");
 
     $updated_date = date("Y-m-d H:i:s");
 
@@ -59,9 +57,10 @@ if (isset($_POST["submitbutton"])){
     
     try{
         $statement->execute();
-        header("Location: " . $_SERVER['PHP_SELF'], true, 303);
+        header("Location:/LibraryManagement/mypage.php");
         exit;
     }catch(PDOException){
+        GenerateCsrfToken("info_edit");//トークン再発行
         echo "更新失敗";
     }
 }
@@ -103,7 +102,7 @@ isLogin();
         <br>
 
         <input type="submit" value="更新" name="submitbutton">
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]; ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]["info_edit"]; ?>">
     </form>
 </body>
 </html>

@@ -6,12 +6,13 @@ include_once("./lib/common_function.php");
 include_once("./database/connect.php");
 
 isLogin();
-GenerateCsrfToken();
+GenerateCsrfToken("logout");
+
+err_message();
 
 if(isset($_POST["logout"])){
-    //csrfトークン判定
-    CheckCsrfToken();
-
+    //csrfトークン照合とリセット
+    TokenCkeckAndReset("logout", "logout.php");
     //セッション破棄
     $_SESSION = [];
     session_destroy();
@@ -42,7 +43,7 @@ if(isset($_POST["logout"])){
     <br>
     <form method="POST">
         <input type="submit" value="ログアウトする" name="logout">
-        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]; ?>">
+        <input type="hidden" name="csrf_token" value="<?php echo $_SESSION["csrf_token"]["logout"]; ?>">
     </form>
 </body>
 </html>
